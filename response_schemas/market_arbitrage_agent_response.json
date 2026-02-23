@@ -1,0 +1,58 @@
+{
+  "agent_name": "Market Arbitrage Agent",
+  "agent_id": "699b99a2108f0261e19ab10c",
+  "description": "Takes selected candidate items and cross-references against eBay sold listings, StockX prices, and Amazon marketplace pricing. Calculates flip margin accounting for 15% buyer premium and estimated shipping costs. Highlights items with 50%+ ROI. Flags deal-breakers.",
+  "agent_type": "json",
+  "accessor": "result",
+  "auto_generated": true,
+  "response_schema": {
+    "analyses": [
+      {
+        "item_name": "string",
+        "auction_price": "string",
+        "market_price": "string",
+        "buyer_premium": "string",
+        "shipping_estimate": "string",
+        "platform_fees": "string",
+        "net_profit": "string",
+        "roi_percentage": "string",
+        "roi_rating": "string",
+        "risk_flags": [
+          "string"
+        ],
+        "comparable_sales": [
+          "string"
+        ],
+        "recommendation": "string"
+      }
+    ],
+    "summary": "string",
+    "high_margin_count": "number",
+    "total_analyzed": "number"
+  },
+  "example_response": {
+    "analyses": [
+      {
+        "item_name": "sample string",
+        "auction_price": "sample string",
+        "market_price": "sample string",
+        "buyer_premium": "sample string",
+        "shipping_estimate": "sample string",
+        "platform_fees": "sample string",
+        "net_profit": "sample string",
+        "roi_percentage": "sample string",
+        "roi_rating": "sample string",
+        "risk_flags": [
+          "sample string"
+        ],
+        "comparable_sales": [
+          "sample string"
+        ],
+        "recommendation": "sample string"
+      }
+    ],
+    "summary": "sample string",
+    "high_margin_count": 0,
+    "total_analyzed": 0
+  }
+}

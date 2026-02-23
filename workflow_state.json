@@ -1,0 +1,68 @@
+{
+  "workflow_name": "The Asset Recovery Hub",
+  "created_at": "2026-02-23",
+  "agents": {
+    "auction_scout": {
+      "agent_id": "699b99a16aebb68b8d73f2f9",
+      "name": "Auction Scout Agent",
+      "provider": "perplexity",
+      "model": "sonar-pro",
+      "temperature": 0.2,
+      "top_p": 1,
+      "agent_type": "json",
+      "has_tools": false,
+      "has_knowledge_base": false,
+      "has_image_output": false,
+      "has_voice": false,
+      "has_file_output": false
+    },
+    "market_arbitrage": {
+      "agent_id": "699b99a2108f0261e19ab10c",
+      "name": "Market Arbitrage Agent",
+      "provider": "perplexity",
+      "model": "sonar-pro",
+      "temperature": 0.2,
+      "top_p": 1,
+      "agent_type": "json",
+      "has_tools": false,
+      "has_knowledge_base": false,
+      "has_image_output": false,
+      "has_voice": false,
+      "has_file_output": false
+    },
+    "storefront": {
+      "agent_id": "699b99a2ee4ca13638216a70",
+      "name": "Storefront Agent",
+      "provider": "openai",
+      "model": "gpt-4.1",
+      "temperature": 0.7,
+      "top_p": 0.95,
+      "agent_type": "json",
+      "has_tools": false,
+      "has_knowledge_base": false,
+      "has_image_output": false,
+      "has_voice": false,
+      "has_file_output": false
+    },
+    "inspection_scheduler": {
+      "agent_id": "699b99a27487a4b9395d28a1",
+      "name": "Inspection Scheduler Agent",
+      "provider": "perplexity",
+      "model": "sonar-pro",
+      "temperature": 0.3,
+      "top_p": 1,
+      "agent_type": "json",
+      "has_tools": false,
+      "has_knowledge_base": false,
+      "has_image_output": false,
+      "has_voice": false,
+      "has_file_output": false
+    }
+  },
+  "agent_ids": [
+    "699b99a16aebb68b8d73f2f9",
+    "699b99a2108f0261e19ab10c",
+    "699b99a2ee4ca13638216a70",
+    "699b99a27487a4b9395d28a1"
+  ]
+}

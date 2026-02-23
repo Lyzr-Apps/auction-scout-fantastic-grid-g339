@@ -1,0 +1,54 @@
+{
+  "agent_name": "Auction Scout Agent",
+  "agent_id": "699b99a16aebb68b8d73f2f9",
+  "description": "Scrapes GSAAuctions.gov, Treasury.gov GP Auctions, AppleAuctioneering.com, and USAAuctionOnline.com for upcoming lots. Filters for high-demand consumer electronics, jewelry, and collectibles. Flags items with Original Packaging or Like New status. Discards heavy machinery/vehicles unless meeting ROI thresholds.",
+  "agent_type": "json",
+  "accessor": "result",
+  "auto_generated": true,
+  "response_schema": {
+    "candidates": [
+      {
+        "item_name": "string",
+        "description": "string",
+        "source": "string",
+        "category": "string",
+        "current_bid": "string",
+        "condition": "string",
+        "estimated_value": "string",
+        "lot_id": "string",
+        "auction_end_date": "string",
+        "flags": [
+          "string"
+        ]
+      }
+    ],
+    "scan_summary": "string",
+    "total_found": "number",
+    "sources_checked": [
+      "string"
+    ]
+  },
+  "example_response": {
+    "candidates": [
+      {
+        "item_name": "sample string",
+        "description": "sample string",
+        "source": "sample string",
+        "category": "sample string",
+        "current_bid": "sample string",
+        "condition": "sample string",
+        "estimated_value": "sample string",
+        "lot_id": "sample string",
+        "auction_end_date": "sample string",
+        "flags": [
+          "sample string"
+        ]
+      }
+    ],
+    "scan_summary": "sample string",
+    "total_found": 0,
+    "sources_checked": [
+      "sample string"
+    ]
+  }
+}

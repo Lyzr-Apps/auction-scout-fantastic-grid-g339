@@ -1,0 +1,52 @@
+{
+  "agent_name": "Storefront Agent",
+  "agent_id": "699b99a2ee4ca13638216a70",
+  "description": "Generates SEO-optimized product titles and descriptions for approved items using Estate and Liquidation Specialists branding. Creates Shopify-ready draft listings with premium positioning, no mention of government/auction sourcing. Adds Limited Availability messaging. Includes 7-day processing period language.",
+  "agent_type": "json",
+  "accessor": "result",
+  "auto_generated": true,
+  "response_schema": {
+    "listings": [
+      {
+        "product_title": "string",
+        "description": "string",
+        "suggested_price": "string",
+        "compare_at_price": "string",
+        "tags": [
+          "string"
+        ],
+        "category": "string",
+        "shipping_terms": "string",
+        "processing_note": "string",
+        "condition_description": "string",
+        "seo_keywords": [
+          "string"
+        ]
+      }
+    ],
+    "brand_statement": "string",
+    "total_listings": "number"
+  },
+  "example_response": {
+    "listings": [
+      {
+        "product_title": "sample string",
+        "description": "sample string",
+        "suggested_price": "sample string",
+        "compare_at_price": "sample string",
+        "tags": [
+          "sample string"
+        ],
+        "category": "sample string",
+        "shipping_terms": "sample string",
+        "processing_note": "sample string",
+        "condition_description": "sample string",
+        "seo_keywords": [
+          "sample string"
+        ]
+      }
+    ],
+    "brand_statement": "sample string",
+    "total_listings": 0
+  }
+}

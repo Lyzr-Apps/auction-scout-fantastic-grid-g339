@@ -1,0 +1,48 @@
+{
+  "agent_name": "Inspection Scheduler Agent",
+  "agent_id": "699b99a27487a4b9395d28a1",
+  "description": "Identifies auction lots located within 100 miles of Panama City, FL from all four auction sources. Generates item-specific inspection checklists with serial number verification for electronics, authenticity checks for luxury goods, and condition assessment criteria. Surfaces inspection day dates and location details.",
+  "agent_type": "json",
+  "accessor": "result",
+  "auto_generated": true,
+  "response_schema": {
+    "local_lots": [
+      {
+        "item_name": "string",
+        "source": "string",
+        "location": "string",
+        "distance_miles": "string",
+        "inspection_dates": "string",
+        "lot_id": "string",
+        "current_bid": "string",
+        "category": "string",
+        "checklist": [
+          "string"
+        ]
+      }
+    ],
+    "search_radius": "string",
+    "total_found": "number",
+    "base_location": "string"
+  },
+  "example_response": {
+    "local_lots": [
+      {
+        "item_name": "sample string",
+        "source": "sample string",
+        "location": "sample string",
+        "distance_miles": "sample string",
+        "inspection_dates": "sample string",
+        "lot_id": "sample string",
+        "current_bid": "sample string",
+        "category": "sample string",
+        "checklist": [
+          "sample string"
+        ]
+      }
+    ],
+    "search_radius": "sample string",
+    "total_found": 0,
+    "base_location": "sample string"
+  }
+}

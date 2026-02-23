@@ -1,0 +1,30 @@
+{
+  "agent_name": "Auction Scout Agent",
+  "agent_id": "699b99a16aebb68b8d73f2f9",
+  "agent_type": "json",
+  "accessor": "result.response.result",
+  "has_module_outputs": false,
+  "response_schema": {
+    "candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "item_name": { "type": "string" },
+          "description": { "type": "string" },
+          "source": { "type": "string" },
+          "category": { "type": "string" },
+          "current_bid": { "type": "string" },
+          "condition": { "type": "string" },
+          "estimated_value": { "type": "string" },
+          "lot_id": { "type": "string" },
+          "auction_end_date": { "type": "string" },
+          "flags": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "scan_summary": { "type": "string" },
+    "total_found": { "type": "number" },
+    "sources_checked": { "type": "array", "items": { "type": "string" } }
+  }
+}

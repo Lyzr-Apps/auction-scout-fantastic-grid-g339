@@ -1,0 +1,32 @@
+{
+  "agent_name": "Market Arbitrage Agent",
+  "agent_id": "699b99a2108f0261e19ab10c",
+  "agent_type": "json",
+  "accessor": "result.response.result",
+  "has_module_outputs": false,
+  "response_schema": {
+    "analyses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "item_name": { "type": "string" },
+          "auction_price": { "type": "string" },
+          "market_price": { "type": "string" },
+          "buyer_premium": { "type": "string" },
+          "shipping_estimate": { "type": "string" },
+          "platform_fees": { "type": "string" },
+          "net_profit": { "type": "string" },
+          "roi_percentage": { "type": "string" },
+          "roi_rating": { "type": "string" },
+          "risk_flags": { "type": "array", "items": { "type": "string" } },
+          "comparable_sales": { "type": "array", "items": { "type": "string" } },
+          "recommendation": { "type": "string" }
+        }
+      }
+    },
+    "summary": { "type": "string" },
+    "high_margin_count": { "type": "number" },
+    "total_analyzed": { "type": "number" }
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "workflow_name": "The Asset Recovery Hub",
+  "description": "Stealth arbitrage operations platform for government auction sourcing, market analysis, and premium storefront listing generation",
+  "nodes": [
+    {
+      "id": "input_node",
+      "type": "Input",
+      "label": "Operator Input",
+      "nodeCategory": "input"
+    },
+    {
+      "id": "auction_scout",
+      "type": "Agent",
+      "label": "Auction Scout Agent",
+      "nodeCategory": "agent",
+      "agent_id": "699b99a16aebb68b8d73f2f9",
+      "provider": "perplexity",
+      "model": "sonar-pro"
+    },
+    {
+      "id": "market_arbitrage",
+      "type": "Agent",
+      "label": "Market Arbitrage Agent",
+      "nodeCategory": "agent",
+      "agent_id": "699b99a2108f0261e19ab10c",
+      "provider": "perplexity",
+      "model": "sonar-pro"
+    },
+    {
+      "id": "storefront",
+      "type": "Agent",
+      "label": "Storefront Agent",
+      "nodeCategory": "agent",
+      "agent_id": "699b99a2ee4ca13638216a70",
+      "provider": "openai",
+      "model": "gpt-4.1"
+    },
+    {
+      "id": "inspection_scheduler",
+      "type": "Agent",
+      "label": "Inspection Scheduler Agent",
+      "nodeCategory": "agent",
+      "agent_id": "699b99a27487a4b9395d28a1",
+      "provider": "perplexity",
+      "model": "sonar-pro"
+    },
+    {
+      "id": "output_node",
+      "type": "Output",
+      "label": "Results Output",
+      "nodeCategory": "end"
+    }
+  ],
+  "edges": [
+    {
+      "source": "input_node",
+      "target": "auction_scout"
+    },
+    {
+      "source": "input_node",
+      "target": "inspection_scheduler"
+    },
+    {
+      "source": "auction_scout",
+      "target": "market_arbitrage"
+    },
+    {
+      "source": "market_arbitrage",
+      "target": "storefront"
+    },
+    {
+      "source": "storefront",
+      "target": "output_node"
+    },
+    {
+      "source": "inspection_scheduler",
+      "target": "output_node"
+    }
+  ]
+}

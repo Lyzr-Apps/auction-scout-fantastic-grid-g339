@@ -1,0 +1,29 @@
+{
+  "agent_name": "Inspection Scheduler Agent",
+  "agent_id": "699b99a27487a4b9395d28a1",
+  "agent_type": "json",
+  "accessor": "result.response.result",
+  "has_module_outputs": false,
+  "response_schema": {
+    "local_lots": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "item_name": { "type": "string" },
+          "source": { "type": "string" },
+          "location": { "type": "string" },
+          "distance_miles": { "type": "string" },
+          "inspection_dates": { "type": "string" },
+          "lot_id": { "type": "string" },
+          "current_bid": { "type": "string" },
+          "category": { "type": "string" },
+          "checklist": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "search_radius": { "type": "string" },
+    "total_found": { "type": "number" },
+    "base_location": { "type": "string" }
+  }
+}

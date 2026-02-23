@@ -1,0 +1,29 @@
+{
+  "agent_name": "Storefront Agent",
+  "agent_id": "699b99a2ee4ca13638216a70",
+  "agent_type": "json",
+  "accessor": "result.response.result",
+  "has_module_outputs": false,
+  "response_schema": {
+    "listings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "product_title": { "type": "string" },
+          "description": { "type": "string" },
+          "suggested_price": { "type": "string" },
+          "compare_at_price": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "category": { "type": "string" },
+          "shipping_terms": { "type": "string" },
+          "processing_note": { "type": "string" },
+          "condition_description": { "type": "string" },
+          "seo_keywords": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "brand_statement": { "type": "string" },
+    "total_listings": { "type": "number" }
+  }
+}
