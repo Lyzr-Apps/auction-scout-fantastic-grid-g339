@@ -1,0 +1,31 @@
+{
+  "agent_name": "Live Inventory Scout",
+  "agent_id": "699bac59a672b9b9376d7ef2",
+  "agent_type": "json",
+  "accessor": "result.response.result",
+  "has_module_outputs": false,
+  "response_schema": {
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "item_name": { "type": "string" },
+          "description": { "type": "string" },
+          "source_url": { "type": "string" },
+          "current_price": { "type": "string" },
+          "condition": { "type": "string" },
+          "lot_id": { "type": "string" },
+          "availability": { "type": "string" },
+          "category": { "type": "string" },
+          "special_notes": { "type": "string" },
+          "time_sensitive": { "type": "boolean" }
+        }
+      }
+    },
+    "sites_visited": { "type": "array", "items": { "type": "string" } },
+    "access_timestamp": { "type": "string" },
+    "total_items": { "type": "number" },
+    "summary": { "type": "string" }
+  }
+}

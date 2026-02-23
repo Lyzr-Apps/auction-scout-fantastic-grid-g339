@@ -1,0 +1,52 @@
+{
+  "agent_name": "Live Inventory Scout",
+  "agent_id": "699bac59a672b9b9376d7ef2",
+  "description": "Directly visits and browses specific auction and inventory websites to pull live, real-time inventory listings, pricing data, lot details, and availability status. Can navigate to specific URLs provided by the operator to access inventory databases, check current lot statuses, verify pricing, and extract structured item data from any auction or marketplace website.",
+  "agent_type": "json",
+  "accessor": "result",
+  "auto_generated": true,
+  "response_schema": {
+    "items": [
+      {
+        "item_name": "string",
+        "description": "string",
+        "source_url": "string",
+        "current_price": "string",
+        "condition": "string",
+        "lot_id": "string",
+        "availability": "string",
+        "category": "string",
+        "special_notes": "string",
+        "time_sensitive": "boolean"
+      }
+    ],
+    "sites_visited": [
+      "string"
+    ],
+    "access_timestamp": "string",
+    "total_items": "number",
+    "summary": "string"
+  },
+  "example_response": {
+    "items": [
+      {
+        "item_name": "sample string",
+        "description": "sample string",
+        "source_url": "sample string",
+        "current_price": "sample string",
+        "condition": "sample string",
+        "lot_id": "sample string",
+        "availability": "sample string",
+        "category": "sample string",
+        "special_notes": "sample string",
+        "time_sensitive": false
+      }
+    ],
+    "sites_visited": [
+      "sample string"
+    ],
+    "access_timestamp": "sample string",
+    "total_items": 0,
+    "summary": "sample string"
+  }
+}

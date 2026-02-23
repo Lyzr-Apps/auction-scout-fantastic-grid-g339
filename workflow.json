@@ -45,6 +45,15 @@
       "model": "sonar-pro"
     },
     {
+      "id": "live_inventory",
+      "type": "Agent",
+      "label": "Live Inventory Scout",
+      "nodeCategory": "agent",
+      "agent_id": "699bac59a672b9b9376d7ef2",
+      "provider": "perplexity",
+      "model": "sonar-pro"
+    },
+    {
       "id": "output_node",
       "type": "Output",
       "label": "Results Output",
@@ -61,6 +70,10 @@
       "target": "inspection_scheduler"
     },
     {
+      "source": "input_node",
+      "target": "live_inventory"
+    },
+    {
       "source": "auction_scout",
       "target": "market_arbitrage"
     },
@@ -74,6 +87,14 @@
     },
     {
       "source": "inspection_scheduler",
+      "target": "output_node"
+    },
+    {
+      "source": "live_inventory",
+      "target": "market_arbitrage"
+    },
+    {
+      "source": "live_inventory",
       "target": "output_node"
     }
   ]

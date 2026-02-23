@@ -25,6 +25,9 @@ import {
   HiOutlineBolt,
   HiOutlineTag,
   HiOutlineArchiveBox,
+  HiOutlineGlobeAlt,
+  HiOutlineLink,
+  HiOutlineSignal,
 } from 'react-icons/hi2'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card'
@@ -46,6 +49,7 @@ const AGENT_IDS = {
   marketArbitrage: '699b99a2108f0261e19ab10c',
   storefront: '699b99a2ee4ca13638216a70',
   inspectionScheduler: '699b99a27487a4b9395d28a1',
+  liveInventory: '699bac59a672b9b9376d7ef2',
 } as const
 
 // ─── Types ───
@@ -102,6 +106,19 @@ interface LocalLot {
   checklist: string[]
 }
 
+interface LiveInventoryItem {
+  item_name: string
+  description: string
+  source_url: string
+  current_price: string
+  condition: string
+  lot_id: string
+  availability: string
+  category: string
+  special_notes: string
+  time_sensitive: boolean
+}
+
 interface PriorityItem {
   id: string
   item_name: string
@@ -112,7 +129,7 @@ interface PriorityItem {
   hold_end: number
 }
 
-type Screen = 'dashboard' | 'scanner' | 'analysis' | 'drafts' | 'inspections' | 'priority'
+type Screen = 'dashboard' | 'scanner' | 'analysis' | 'drafts' | 'inspections' | 'priority' | 'inventory'
 
 const PRIORITY_STAGES = [
   'Customer Purchased',
@@ -230,7 +247,18 @@ export default function RecoveryHub() {
   const [analyzeError, setAnalyzeError] = useState('')
   const [listingError, setListingError] = useState('')
   const [inspectionError, setInspectionError] = useState('')
+  const [inventoryError, setInventoryError] = useState('')
   const [statusMessage, setStatusMessage] = useState('')
+
+  // Live Inventory
+  const [inventoryLoading, setInventoryLoading] = useState(false)
+  const [inventoryItems, setInventoryItems] = useState<LiveInventoryItem[]>([])
+  const [inventorySummary, setInventorySummary] = useState('')
+  const [inventorySitesVisited, setInventorySitesVisited] = useState<string[]>([])
+  const [inventoryTimestamp, setInventoryTimestamp] = useState('')
+  const [inventoryUrl, setInventoryUrl] = useState('')
+  const [inventoryQuery, setInventoryQuery] = useState('')
+  const [expandedInventory, setExpandedInventory] = useState<number | null>(null)
 
   const [sourceFilter, setSourceFilter] = useState('all')
   const [categoryFilter, setCategoryFilter] = useState('all')
@@ -379,6 +407,41 @@ export default function RecoveryHub() {
     }
   }, [])
 
+  const handleBrowseInventory = useCallback(async () => {
+    if (!inventoryUrl.trim() && !inventoryQuery.trim()) return
+    setInventoryLoading(true)
+    setInventoryError('')
+    setStatusMessage('Browsing live inventory...')
+    try {
+      let message = ''
+      if (inventoryUrl.trim()) {
+        message = `Visit this specific URL and extract all inventory/listing data from the page: ${inventoryUrl.trim()}. For each item found, provide the item name, description, source URL, current price, condition, lot ID, availability status, category, any special notes, and whether it's time-sensitive. Structure everything as a clean inventory list.`
+      } else {
+        message = `Browse auction and inventory websites to find: ${inventoryQuery.trim()}. Search across GSAAuctions.gov, Treasury.gov, AppleAuctioneering.com, USAAuctionOnline.com, eBay, and other relevant marketplaces. Extract real-time listing data including prices, conditions, lot IDs, and availability. Flag any time-sensitive listings ending within 48 hours.`
+      }
+      const result = await callAIAgent(message, AGENT_IDS.liveInventory)
+      if (result.success && result.response) {
+        const rawResult = result.response?.result || result.response
+        const parsed = parseLLMJson(rawResult)
+        const items = Array.isArray(parsed?.items) ? parsed.items : []
+        setInventoryItems(items)
+        setInventorySummary(parsed?.summary || `Found ${items.length} items`)
+        setInventorySitesVisited(Array.isArray(parsed?.sites_visited) ? parsed.sites_visited : [])
+        setInventoryTimestamp(parsed?.access_timestamp || new Date().toISOString())
+        setStatusMessage(items.length > 0 ? `Live scan: ${items.length} items found` : 'No items found')
+        setActiveScreen('inventory')
+      } else {
+        setInventoryError(result.error || 'Live browse failed. Please try again.')
+        setStatusMessage('')
+      }
+    } catch (err: any) {
+      setInventoryError(err.message || 'Live browse failed')
+      setStatusMessage('')
+    } finally {
+      setInventoryLoading(false)
+    }
+  }, [inventoryUrl, inventoryQuery])
+
   // ─── Selection Helpers ───
   const toggleCandidate = (idx: number) => {
     setSelectedCandidates((prev) => {
@@ -504,6 +567,7 @@ export default function RecoveryHub() {
     { id: 'analysis', label: 'Margin Analysis', icon: <HiOutlineChartBarSquare className="w-5 h-5" />, badge: analyses.length || undefined },
     { id: 'drafts', label: 'Listing Drafts', icon: <HiOutlineDocumentText className="w-5 h-5" />, badge: listings.length || undefined },
     { id: 'inspections', label: 'Local Inspections', icon: <HiOutlineMapPin className="w-5 h-5" />, badge: localLots.length || undefined },
+    { id: 'inventory', label: 'Live Inventory', icon: <HiOutlineGlobeAlt className="w-5 h-5" />, badge: inventoryItems.length || undefined },
     { id: 'priority', label: 'Priority Queue', icon: <HiOutlineFlag className="w-5 h-5" />, badge: priorityItems.length || undefined },
   ]
 
@@ -591,6 +655,10 @@ export default function RecoveryHub() {
                   {inspectionLoading ? <HiOutlineArrowPath className="w-4 h-4 mr-2 animate-spin" /> : <HiOutlineMapPin className="w-4 h-4 mr-2" />}
                   Find Local Lots
                 </Button>
+                <Button onClick={() => setActiveScreen('inventory')} variant="secondary" className="border border-border">
+                  <HiOutlineGlobeAlt className="w-4 h-4 mr-2" />
+                  Live Inventory
+                </Button>
               </>
             )}
             {activeScreen === 'scanner' && (
@@ -613,6 +681,17 @@ export default function RecoveryHub() {
               >
                 {listingLoading ? <HiOutlineArrowPath className="w-4 h-4 mr-2 animate-spin" /> : <HiOutlineDocumentText className="w-4 h-4 mr-2" />}
                 Generate Listings ({approvedAnalyses.size})
+              </Button>
+            )}
+            {activeScreen === 'inventory' && (
+              <Button
+                onClick={handleBrowseInventory}
+                disabled={inventoryLoading || (!inventoryUrl.trim() && !inventoryQuery.trim())}
+                className="border-0"
+                style={{ background: 'hsl(36, 60%, 31%)', color: 'hsl(35, 20%, 95%)' }}
+              >
+                {inventoryLoading ? <HiOutlineArrowPath className="w-4 h-4 mr-2 animate-spin" /> : <HiOutlineGlobeAlt className="w-4 h-4 mr-2" />}
+                Browse Inventory
               </Button>
             )}
             <div className="flex items-center gap-2 pl-3 border-l border-border">
@@ -1275,6 +1354,213 @@ export default function RecoveryHub() {
                       )}
                     </div>
                   </div>
+                )}
+              </div>
+            )}
+
+            {/* ─── LIVE INVENTORY ─── */}
+            {activeScreen === 'inventory' && (
+              <div className="space-y-4">
+                {/* Search Controls */}
+                <Card className="border border-border">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <HiOutlineGlobeAlt className="w-4 h-4" style={{ color: 'hsl(36, 60%, 31%)' }} />
+                      Live Inventory Browser
+                    </CardTitle>
+                    <CardDescription className="text-xs">Enter a direct URL to scrape or search across auction marketplaces</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-xs text-muted-foreground mb-1 block">Direct URL</label>
+                        <div className="flex items-center gap-2">
+                          <div className="relative flex-1">
+                            <HiOutlineLink className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                            <Input
+                              placeholder="https://gsaauctions.gov/listing/..."
+                              value={inventoryUrl}
+                              onChange={(e) => setInventoryUrl(e.target.value)}
+                              className="bg-input border-border pl-9"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Separator className="flex-1" />
+                        <span className="text-xs text-muted-foreground">or search by keyword</span>
+                        <Separator className="flex-1" />
+                      </div>
+                      <div>
+                        <label className="text-xs text-muted-foreground mb-1 block">Search Query</label>
+                        <div className="flex items-center gap-2">
+                          <div className="relative flex-1">
+                            <HiOutlineMagnifyingGlass className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                            <Input
+                              placeholder="e.g., Apple MacBook Pro M3, Rolex Submariner, DJI Drone"
+                              value={inventoryQuery}
+                              onChange={(e) => setInventoryQuery(e.target.value)}
+                              className="bg-input border-border pl-9"
+                            />
+                          </div>
+                          <Button
+                            onClick={handleBrowseInventory}
+                            disabled={inventoryLoading || (!inventoryUrl.trim() && !inventoryQuery.trim())}
+                            style={{ background: 'hsl(36, 60%, 31%)', color: 'hsl(35, 20%, 95%)' }}
+                          >
+                            {inventoryLoading ? <HiOutlineArrowPath className="w-4 h-4 mr-2 animate-spin" /> : <HiOutlineSignal className="w-4 h-4 mr-2" />}
+                            {inventoryLoading ? 'Browsing...' : 'Browse'}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {inventoryError && (
+                  <div className="flex items-center gap-3 p-4 rounded-lg text-sm" style={{ background: 'rgba(127, 29, 29, 0.2)', border: '1px solid hsl(0, 63%, 31%)', color: '#fca5a5' }}>
+                    <HiOutlineExclamationTriangle className="w-5 h-5 flex-shrink-0" />
+                    <span className="flex-1">{inventoryError}</span>
+                    <Button variant="ghost" size="sm" onClick={handleBrowseInventory}><HiOutlineArrowPath className="w-4 h-4 mr-1" /> Retry</Button>
+                  </div>
+                )}
+
+                {inventoryLoading && <TableSkeleton rows={6} cols={6} />}
+
+                {/* Summary Bar */}
+                {!inventoryLoading && inventoryItems.length > 0 && (
+                  <div className="flex items-center justify-between flex-wrap gap-3">
+                    <div className="flex items-center gap-3">
+                      {inventorySummary && (
+                        <div className="p-3 rounded-lg text-sm flex-1" style={{ background: 'rgba(127, 85, 26, 0.1)', border: '1px solid rgba(127, 85, 26, 0.3)' }}>
+                          <HiOutlineSignal className="w-4 h-4 inline mr-2" style={{ color: 'hsl(36, 60%, 31%)' }} />
+                          {inventorySummary}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                      {inventoryTimestamp && (
+                        <span className="flex items-center gap-1"><HiOutlineClock className="w-3 h-3" />{new Date(inventoryTimestamp).toLocaleString()}</span>
+                      )}
+                      {inventorySitesVisited.length > 0 && (
+                        <span className="flex items-center gap-1"><HiOutlineGlobeAlt className="w-3 h-3" />{inventorySitesVisited.length} sites visited</span>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Sites Visited */}
+                {!inventoryLoading && inventorySitesVisited.length > 0 && (
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {inventorySitesVisited.map((site, si) => (
+                      <Badge key={si} variant="outline" className="text-xs"><HiOutlineGlobeAlt className="w-3 h-3 mr-1" />{site}</Badge>
+                    ))}
+                  </div>
+                )}
+
+                {/* Empty State */}
+                {!inventoryLoading && inventoryItems.length === 0 && !inventoryError && (
+                  <Card className="border border-border">
+                    <CardContent className="py-12 flex flex-col items-center text-muted-foreground">
+                      <HiOutlineGlobeAlt className="w-12 h-12 mb-4 opacity-30" />
+                      <p className="text-base font-medium">No inventory data yet</p>
+                      <p className="text-sm mt-1">Enter a URL or search query and click &quot;Browse&quot; to scan live listings</p>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Results Table */}
+                {!inventoryLoading && inventoryItems.length > 0 && (
+                  <Card className="border border-border overflow-hidden">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b border-border" style={{ background: 'hsl(20, 18%, 10%)' }}>
+                            <th className="p-3 text-left font-medium text-muted-foreground">Item</th>
+                            <th className="p-3 text-left font-medium text-muted-foreground">Category</th>
+                            <th className="p-3 text-left font-medium text-muted-foreground">Condition</th>
+                            <th className="p-3 text-right font-medium text-muted-foreground">Price</th>
+                            <th className="p-3 text-left font-medium text-muted-foreground">Availability</th>
+                            <th className="p-3 text-left font-medium text-muted-foreground">Lot ID</th>
+                            <th className="p-3 w-8" />
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {inventoryItems.map((item, i) => (
+                            <Fragment key={i}>
+                              <tr className={`border-b border-border/50 hover:bg-muted/20 transition-colors ${item.time_sensitive ? 'bg-red-900/5' : ''}`}>
+                                <td className="p-3">
+                                  <div className="flex items-center gap-2">
+                                    <p className="font-medium truncate max-w-[220px]">{item.item_name}</p>
+                                    {item.time_sensitive && (
+                                      <Badge variant="outline" className="text-xs border-red-700 text-red-300 flex-shrink-0">
+                                        <HiOutlineBolt className="w-3 h-3 mr-1" />Urgent
+                                      </Badge>
+                                    )}
+                                  </div>
+                                </td>
+                                <td className="p-3"><Badge variant="outline" className="text-xs capitalize">{item.category}</Badge></td>
+                                <td className="p-3">
+                                  <Badge variant="outline" className={`text-xs ${(item.condition || '').toLowerCase().includes('new') ? 'border-green-700 text-green-300' : ''}`}>
+                                    {item.condition}
+                                  </Badge>
+                                </td>
+                                <td className="p-3 text-right font-medium" style={{ color: 'hsl(36, 60%, 31%)' }}>{item.current_price}</td>
+                                <td className="p-3">
+                                  <Badge variant="outline" className={`text-xs ${
+                                    (item.availability || '').toLowerCase().includes('available')
+                                      ? 'border-green-700 text-green-300'
+                                      : (item.availability || '').toLowerCase().includes('ending')
+                                      ? 'border-amber-700 text-amber-300'
+                                      : ''
+                                  }`}>
+                                    {item.availability}
+                                  </Badge>
+                                </td>
+                                <td className="p-3 text-muted-foreground font-mono text-xs">{item.lot_id}</td>
+                                <td className="p-3">
+                                  <button onClick={() => setExpandedInventory(expandedInventory === i ? null : i)} className="text-muted-foreground hover:text-foreground transition-colors">
+                                    {expandedInventory === i ? <HiOutlineChevronDown className="w-4 h-4" /> : <HiOutlineChevronRight className="w-4 h-4" />}
+                                  </button>
+                                </td>
+                              </tr>
+                              {expandedInventory === i && (
+                                <tr className="border-b border-border/50">
+                                  <td colSpan={7} className="p-4" style={{ background: 'hsl(20, 18%, 8%)' }}>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                                      <div>
+                                        <span className="text-muted-foreground text-xs">Description</span>
+                                        <p className="mt-1">{item.description}</p>
+                                      </div>
+                                      <div>
+                                        <span className="text-muted-foreground text-xs">Source URL</span>
+                                        <p className="mt-1 text-xs font-mono break-all" style={{ color: 'hsl(36, 60%, 31%)' }}>
+                                          <HiOutlineLink className="w-3 h-3 inline mr-1" />
+                                          {item.source_url}
+                                        </p>
+                                      </div>
+                                      <div>
+                                        <span className="text-muted-foreground text-xs">Special Notes</span>
+                                        <p className={`mt-1 text-xs ${item.special_notes ? '' : 'text-muted-foreground'}`}>
+                                          {item.special_notes || 'No special notes'}
+                                        </p>
+                                        {item.time_sensitive && (
+                                          <div className="mt-2 flex items-center gap-1 text-xs text-red-400">
+                                            <HiOutlineBolt className="w-3 h-3" />
+                                            Time-sensitive listing - act fast
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </td>
+                                </tr>
+                              )}
+                            </Fragment>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </Card>
                 )}
               </div>
             )}
